@@ -1,10 +1,20 @@
-import { wrapRequestHandler } from './../utils/handlers';
+import { wrapRequestHandler } from "./../utils/handlers";
 import { Router } from "express";
-import { uploadSingleImageController } from "~/controllers/medias.controllers";
-const mediasRouter = Router()
+import { uploadImageController, uploadVideoController } from "~/controllers/medias.controllers";
+import { accessTokenValidator, verifiedUserValidator } from "~/middlewares/users.middlewares";
+const mediasRouter = Router();
 
+mediasRouter.post(
+  "/upload-image",
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapRequestHandler(uploadImageController),
+);
+mediasRouter.post(
+  "/upload-video",
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapRequestHandler(uploadVideoController),
+);
 
-mediasRouter.post('/upload-image', wrapRequestHandler(uploadSingleImageController))
-
-
-export default mediasRouter
+export default mediasRouter;

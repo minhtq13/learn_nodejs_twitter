@@ -97,6 +97,19 @@ class UsersService {
     };
   }
 
+  async refreshToken({user_id, refresh_token, verify} : {user_id: string, refresh_token: string, verify: UserVerifyStatus}) {
+    const [new_access_token, new_refresh_token] = await Promise.all([
+      this.signAccessToken({ user_id, verify }),
+      this.signRefreshToken({ user_id, verify }),
+      databaseService.refreshTokens.deleteOne({ token: refresh_token }),
+    ]);
+    await databaseService.refreshTokens.insertOne(new RefreshToken({ user_id: new ObjectId(user_id), token: new_refresh_token }));
+    return {
+      access_token: new_access_token,
+      refresh_token: new_refresh_token,
+    };
+  }
+
   async checkEmailExist(email: string) {
     const user = await databaseService.users.findOne({ email });
     return Boolean(user);
@@ -171,16 +184,13 @@ class UsersService {
         user_id: user._id.toString(),
         verify: user.verify,
       });
-      await databaseService.refreshTokens.insertOne(
-        new RefreshToken({ user_id: user._id, token: refresh_token }),
-      );
+      await databaseService.refreshTokens.insertOne(new RefreshToken({ user_id: user._id, token: refresh_token }));
       return {
         access_token,
         refresh_token,
         newUser: 0,
         verify: user.verify,
-      }
-    
+      };
     } else {
       // random string password
       const password = Math.random().toString(36).substring(2, 15);
@@ -192,7 +202,7 @@ class UsersService {
         confirm_password: password,
         date_of_birth: new Date().toISOString(),
       });
-      return {...data, newUser: 1, verify: UserVerifyStatus.Unverified};
+      return { ...data, newUser: 1, verify: UserVerifyStatus.Unverified };
     }
   }
   async logout(refresh_token: string) {
