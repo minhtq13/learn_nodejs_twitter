@@ -7,7 +7,7 @@ import fs from "fs";
 import { config } from "dotenv";
 import { isProduction } from "~/constants/config";
 import { MediaType } from "~/constants/enums";
-import { Media } from "~/models/Orther";
+import { Media } from "~/models/Other";
 config();
 
 class MediaService {

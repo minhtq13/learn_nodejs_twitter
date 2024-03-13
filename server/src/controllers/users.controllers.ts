@@ -39,7 +39,6 @@ export const oauthController = async (req: Request, res: Response) => {
   const result = await usersService.oauth(code as string);
   const urlRedirect = `${process.env.CLIENT_REDIRECT_CALLBACK as string}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}verify=${result.verify}`;
   return res.redirect(urlRedirect);
-  
 };
 
 export const registerController = async (
@@ -59,15 +58,18 @@ export const logoutController = async (req: Request<ParamsDictionary, any, Logou
   return res.json(result);
 };
 
-export const refreshTokenController = async (req: Request<ParamsDictionary, any, RefreshTokenReqBody>, res: Response) => {
-  const {refresh_token} = req.body
-  const {user_id, verify} = req.decoded_refresh_token as TokenPayload
-  const result = await usersService.refreshToken({user_id, refresh_token, verify})
+export const refreshTokenController = async (
+  req: Request<ParamsDictionary, any, RefreshTokenReqBody>,
+  res: Response,
+) => {
+  const { refresh_token } = req.body;
+  const { user_id, verify, exp } = req.decoded_refresh_token as TokenPayload;
+  const result = await usersService.refreshToken({ user_id, refresh_token, verify, exp });
   return res.json({
     message: USERS_MESSAGES.REFRESH_TOKEN_SUCCESS,
-    result
-  })
-}
+    result,
+  });
+};
 
 export const verifyEmailController = async (
   req: Request<ParamsDictionary, any, VerifyEmailReqBody>,
