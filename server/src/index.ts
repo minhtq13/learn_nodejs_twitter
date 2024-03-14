@@ -9,6 +9,7 @@ import staticRouter from "./routes/static.routes";
 import { UPLOAD_VIDEO_DIR } from "./constants/dir";
 import tweetsRouter from "./routes/tweets.routes";
 import bookmarksRouter from "./routes/bookmarks.routes";
+import liklesRouter from "./routes/likes.routes";
 config();
 const app = express();
 const port = process.env.PORT || 4000;
@@ -22,6 +23,8 @@ app.use("/medias", mediasRouter);
 app.use("/static", staticRouter);
 app.use("/tweets", tweetsRouter)
 app.use("/bookmarks", bookmarksRouter)
+app.use("/likes", liklesRouter)
+
 app.use("/static/video", express.static(UPLOAD_VIDEO_DIR));
 databaseService.connect().then(() => {
   databaseService.indexUsers();

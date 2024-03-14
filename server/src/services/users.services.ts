@@ -100,8 +100,10 @@ class UsersService {
         email_verify_token,
         date_of_birth: new Date(payload.date_of_birth),
         password: hashPassword(payload.password),
+        username: payload.email.split("@")[0],
       }),
     );
+    console.log("email_verify_token", email_verify_token)
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
       user_id: user_id.toString(),
       verify: UserVerifyStatus.Unverified,
