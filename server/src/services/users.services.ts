@@ -1,16 +1,17 @@
+import axios from "axios";
+import { config } from "dotenv";
+import { ObjectId } from "mongodb";
 import { TokenType, UserVerifyStatus } from "~/constants/enums";
+import HTTP_STATUS from "~/constants/httpStatus";
+import { USERS_MESSAGES } from "~/constants/message";
+import { ErrorWithStatus } from "~/models/Errors";
 import { RegisterReqBody, UpdateMeReqBody } from "~/models/requests/User.requests";
+import RefreshToken from "~/models/schemas/RefreshToken.schema";
 import User from "~/models/schemas/User.schema";
 import { hashPassword } from "~/utils/crypto";
+import { sendForgotPasswordEmail, sendVerifyRegisterEmail } from "~/utils/email";
 import { signToken, verifyToken } from "~/utils/jwt";
 import databaseService from "./database.serivces";
-import { ObjectId } from "mongodb";
-import RefreshToken from "~/models/schemas/RefreshToken.schema";
-import { config } from "dotenv";
-import { USERS_MESSAGES } from "~/constants/message";
-import axios from "axios";
-import { ErrorWithStatus } from "~/models/Errors";
-import HTTP_STATUS from "~/constants/httpStatus";
 config();
 class UsersService {
   private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
@@ -103,7 +104,14 @@ class UsersService {
         username: payload.email.split("@")[0],
       }),
     );
-    console.log("email_verify_token", email_verify_token)
+    // Flow verify email
+    // 1. Server send email to user
+    // 2. User click link in email
+    // 3. Client send request to server with email_verify_token
+    // 4. Server verify email_verify_token
+    // 5. Client receive access_token and refresh_token
+    await sendVerifyRegisterEmail(payload.email, email_verify_token);
+    console.log("email_verify_token", email_verify_token);
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
       user_id: user_id.toString(),
       verify: UserVerifyStatus.Unverified,
@@ -271,11 +279,14 @@ class UsersService {
       refresh_token,
     };
   }
-  async resendEmailVerify(user_id: string) {
+  async resendEmailVerify(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken({
       user_id,
       verify: UserVerifyStatus.Unverified,
     });
+    // Gửi email
+    await sendVerifyRegisterEmail(email, email_verify_token)
+
     await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       { $set: { email_verify_token, updated_at: "$$NOW" } },
     ]);
@@ -283,7 +294,7 @@ class UsersService {
       message: USERS_MESSAGES.RESEND_EMAIL_VERIFY_SUCCESS,
     };
   }
-  async forgotPassword({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  async forgotPassword({ user_id, verify, email }: { user_id: string; verify: UserVerifyStatus, email: string }) {
     const forgot_password_token = await this.signForgotPasswordToken({
       user_id,
       verify,
@@ -291,7 +302,10 @@ class UsersService {
     databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       { $set: { forgot_password_token, updated_at: "$$NOW" } },
     ]);
+
     // Gửi email chứa link reset password
+    await sendForgotPasswordEmail(email, forgot_password_token)
+
     return {
       message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD,
     };

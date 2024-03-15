@@ -102,7 +102,7 @@ export const resendVerifyEmailController = async (req: Request, res: Response, n
   if (user.verify === UserVerifyStatus.Verified) {
     return res.json({ message: USERS_MESSAGES.EMAIL_VERIFIED });
   }
-  const result = await usersService.resendEmailVerify(user_id);
+  const result = await usersService.resendEmailVerify(user_id, user.email);
   return res.json(result);
 };
 
@@ -111,8 +111,8 @@ export const forgotPasswordController = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { _id, verify } = req.user as User;
-  const result = await usersService.forgotPassword({ user_id: (_id as ObjectId)?.toString(), verify });
+  const { _id, verify, email } = req.user as User;
+  const result = await usersService.forgotPassword({ user_id: (_id as ObjectId)?.toString(), verify, email });
   return res.json(result);
 };
 
