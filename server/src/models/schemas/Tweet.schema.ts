@@ -29,8 +29,8 @@ export default class Tweet {
   medias: Media[];
   guest_views: number;
   user_views: number;
-  create_at: Date;
-  update_at: Date;
+  created_at: Date;
+  updated_at: Date;
   constructor({
     _id,
     user_id,
@@ -57,7 +57,7 @@ export default class Tweet {
     this.medias = medias;
     this.guest_views = guest_views || 0
     this.user_views = user_views || 0
-    this.create_at = create_at || new Date();
-    this.update_at = update_at || new Date();
+    this.created_at = create_at || new Date();
+    this.updated_at = update_at || new Date();
   }
 }

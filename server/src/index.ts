@@ -10,6 +10,8 @@ import { UPLOAD_VIDEO_DIR } from "./constants/dir";
 import tweetsRouter from "./routes/tweets.routes";
 import bookmarksRouter from "./routes/bookmarks.routes";
 import liklesRouter from "./routes/likes.routes";
+import searchRouter from "./routes/search.routes";
+// import '~/utils/fake'
 config();
 const app = express();
 const port = process.env.PORT || 4000;
@@ -24,12 +26,14 @@ app.use("/static", staticRouter);
 app.use("/tweets", tweetsRouter)
 app.use("/bookmarks", bookmarksRouter)
 app.use("/likes", liklesRouter)
+app.use("/search", searchRouter)
 
 app.use("/static/video", express.static(UPLOAD_VIDEO_DIR));
 databaseService.connect().then(() => {
   databaseService.indexUsers();
   databaseService.indexRefreshToken();
   databaseService.indexFollowers();
+  databaseService.indexTweets()
 });
 app.use(defaultErrorHandler);
 app.listen(port, () => {
