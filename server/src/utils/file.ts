@@ -69,7 +69,9 @@ export const handleUploadVideo = async (req: Request) => {
       const videos = files.video as File[];
       videos.forEach((video) => {
         const ext = getExtension(video.originalFilename as string);
-        fs.renameSync(video.filepath, video.filepath + "." + ext);
+        const newFilePath = video.filepath + "." + ext;
+        fs.renameSync(video.filepath, newFilePath);
+        video.filepath = newFilePath;
         video.newFilename = video.newFilename + "." + ext;
       });
       resolve(files.video as File[]);
