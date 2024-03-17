@@ -11,10 +11,17 @@ import tweetsRouter from "./routes/tweets.routes";
 import bookmarksRouter from "./routes/bookmarks.routes";
 import liklesRouter from "./routes/likes.routes";
 import searchRouter from "./routes/search.routes";
+import cors from "cors";
+import '~/utils/s3'
 // import '~/utils/fake'
 config();
 const app = express();
 const port = process.env.PORT || 4000;
+
+app.use(cors())
+ app.listen(3000, function () {
+  console.log('CORS-enabled web server listening on port 3000')
+})
 
 // Tạo folder upload
 initFolder();

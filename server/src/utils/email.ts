@@ -98,6 +98,6 @@ export const sendForgotPasswordEmail = (
       .replace("{{title}}", "You recently requested to reset your password")
       .replace("{{content}}", "Click the button below to reset your password")
       .replace("{{titleLink}}", "Reset password")
-      .replace("{{link}}", `${process.env.CLIENT_URL}/reset-password?token=${forgot_password_token}`),
+      .replace("{{link}}", `${process.env.CLIENT_URL}/forgot-password?token=${forgot_password_token}`),
   );
 };
