@@ -4,6 +4,7 @@ import {
   followController,
   forgotPasswordController,
   getMeController,
+  getProfileController,
   loginController,
   logoutController,
   oauthController,
@@ -81,7 +82,7 @@ usersRouter.patch(
   wrapRequestHandler(updateMeController),
 );
 
-// usersRouter.post("/:username", wrapRequestHandler(getProfileController));
+usersRouter.get("/:username", wrapRequestHandler(getProfileController));
 
 
 usersRouter.post("/follow", accessTokenValidator, verifiedUserValidator, followValidator, wrapRequestHandler(followController));

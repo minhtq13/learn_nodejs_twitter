@@ -1,3 +1,4 @@
-export interface BookmarkRequestBody {
-  tweet_id: string;
+import { ParamsDictionary } from 'express-serve-static-core';
+export interface GetConversationParams extends ParamsDictionary {
+  receiver_id: string;
 }

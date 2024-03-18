@@ -9,6 +9,7 @@ import {
   ChangePasswordReqBody,
   FollowReqBody,
   ForgotPasswordReqBody,
+  GetProfileReqParams,
   LoginReqBody,
   LogoutReqBody,
   RefreshTokenReqBody,
@@ -159,14 +160,18 @@ export const updateMeController = async (
     result: user,
   });
 };
-// export const getProfileController = async (Request<ParamsDictionary, any, GetProfileReqParams>, res: Response, next: NextFunction) => {
-//   const {username} = req.params
-//   const user = wait usersService.getProfile(username)
-//   return res.json({
-//     message: USERS_MESSAGES.GET_PROFILE_SUCCESS,
-//     result: user
-//   })
-// }
+export const getProfileController = async (
+  req: Request<ParamsDictionary, any, GetProfileReqParams>,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { username } = req.params;
+  const user = await usersService.getProfile(username);
+  return res.json({
+    message: USERS_MESSAGES.GET_PROFILE_SUCCESS,
+    result: user,
+  });
+};
 
 export const followController = async (
   req: Request<ParamsDictionary, any, FollowReqBody>,

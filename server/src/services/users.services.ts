@@ -285,7 +285,7 @@ class UsersService {
       verify: UserVerifyStatus.Unverified,
     });
     // Gửi email
-    await sendVerifyRegisterEmail(email, email_verify_token)
+    await sendVerifyRegisterEmail(email, email_verify_token);
 
     await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       { $set: { email_verify_token, updated_at: "$$NOW" } },
@@ -294,7 +294,7 @@ class UsersService {
       message: USERS_MESSAGES.RESEND_EMAIL_VERIFY_SUCCESS,
     };
   }
-  async forgotPassword({ user_id, verify, email }: { user_id: string; verify: UserVerifyStatus, email: string }) {
+  async forgotPassword({ user_id, verify, email }: { user_id: string; verify: UserVerifyStatus; email: string }) {
     const forgot_password_token = await this.signForgotPasswordToken({
       user_id,
       verify,
@@ -304,7 +304,7 @@ class UsersService {
     ]);
 
     // Gửi email chứa link reset password
-    await sendForgotPasswordEmail(email, forgot_password_token)
+    await sendForgotPasswordEmail(email, forgot_password_token);
 
     return {
       message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD,
@@ -347,6 +347,19 @@ class UsersService {
       },
       {
         returnDocument: "after",
+        projection: {
+          password: 0,
+          email_verify_token: 0,
+          forgot_password_token: 0,
+        },
+      },
+    );
+    return user;
+  }
+  async getProfile(username: string) {
+    const user = await databaseService.users.findOne(
+      { username },
+      {
         projection: {
           password: 0,
           email_verify_token: 0,
