@@ -36,14 +36,17 @@ export default function Chat() {
       });
   };
   useEffect(() => {
-    socket.auth = {
-      _id: profile._id,
-    };
-    socket.connect();
     socket.on("receive_message", (data) => {
       const { payload } = data;
-      setConversations((messages) => [...messages, payload]);
+      console.log(payload)
+      setConversations((conversations) => [...conversations, payload]);
     });
+    socket.on("connect_error", (err) => {
+      console.log(err.data);
+    })
+    socket.on("disconnect", (reason) => {
+      console.log(reason)
+    })
     return () => {
       socket.disconnect();
     };
