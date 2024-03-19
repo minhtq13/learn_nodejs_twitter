@@ -74,7 +74,7 @@ export default function Chat() {
     }
   }, [receiver]);
 
-  const fetchMoreConversation = () => {
+  const fetchMoreConversations = () => {
     if (receiver && pagination.page < pagination.total_page) {
       axios
         .get(`/conversations/receivers/${receiver}`, {
@@ -141,24 +141,22 @@ export default function Chat() {
         {/*Put the scroll bar always on the bottom*/}
         <InfiniteScroll
           dataLength={conversations.length}
-          next={fetchMoreConversation}
+          next={fetchMoreConversations}
           style={{ display: "flex", flexDirection: "column-reverse" }} //To put endMessage and loader to the top.
           inverse={true} //
           hasMore={pagination.page < pagination.total_page}
           loader={<h4>Loading...</h4>}
           scrollableTarget="scrollableDiv"
         >
-          {/* <div className="chat"> */}
-            {conversations.map((conversation) => {
+            {conversations.map((conversation, index) => {
               return (
-                <div key={conversation._id}>
+                <div key={index}>
                   <div className="message-container">
                     <div className={conversation.sender_id === profile._id ? "message-right message" : "message"}>{conversation.content}</div>
                   </div>
                 </div>
               );
             })}
-          {/* </div> */}
         </InfiniteScroll>
       </div>
       <form onSubmit={send}>
