@@ -37,6 +37,42 @@ import { UpdateMeReqBody } from "~/models/requests/User.requests";
 import { wrapRequestHandler } from "~/utils/handlers";
 const usersRouter = Router();
 
+
+
+/**
+ * @swagger
+ * /users/login:
+ *   post:
+ *     tags:
+ *       - users
+ *     summary: Đăng nhập
+ *     description: Đăng nhập vào hệ thống
+ *     operationId: login
+ *     requestBody:
+ *       description: Thông tin đăng nhập
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/LoginBody"
+ *       required: true
+ *     responses:
+ *       "200":
+ *         description: Đăng nhập thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: object
+ *                   example: Login sucess
+ *                 result:
+ *                   $ref: "#/components/schemas/SuccessAuthentication"
+ *       "422":
+ *         description: Invalid input
+ */
+
+
 usersRouter.post("/login", loginValidator, wrapRequestHandler(loginController));
 
 usersRouter.get("/oauth/google", wrapRequestHandler(oauthController));

@@ -24,7 +24,6 @@ const initSocket = (httpServer: ServerHttp) => {
   io.use(async (socket, next) => {
     const { Authorization } = socket.handshake.auth;
     const access_token = Authorization?.split(" ")[1];
-    console.log("access_token", access_token);
     try {
       const decoded_authorization = await verifyAccessToken(access_token);
       const { verify } = decoded_authorization as TokenPayload;
@@ -66,7 +65,6 @@ const initSocket = (httpServer: ServerHttp) => {
       }
     });
     socket.on("send_message", async (data) => {
-      console.log("data", data.payload);
       const { receiver_id, sender_id, content } = data.payload;
       const receiver_socket_id = users[receiver_id]?.socket_id;
       const conversation = new Conversation({
@@ -76,10 +74,8 @@ const initSocket = (httpServer: ServerHttp) => {
       });
       const result = await databaseService.conversations.insertOne(conversation);
       conversation._id = result.insertedId;
-      console.log("receiver_socket_id", receiver_socket_id);
 
       if (receiver_socket_id) {
-        console.log("receiver_socket_id", receiver_socket_id);
         socket.to(receiver_socket_id).emit("receive_message", {
           payload: conversation,
         });

@@ -2,6 +2,86 @@ import { JwtPayload } from "jsonwebtoken";
 import { TokenType, UserVerifyStatus } from "~/constants/enums";
 import { ParamsDictionary } from "express-serve-static-core";
 
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     LoginBody:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *           example: taminh596@gmail.com
+ *         password:
+ *           type: string
+ *           example: Minh123@
+ *     SuccessAuthentication:
+ *       type: object
+ *       properties:
+ *         access_token:
+ *           type: string
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjVmNDVkN2NiNTc1NDc5YjVmZWRiN2FmIiwidG9rZW5fdHlwZSI6MCwidmVyaWZ5IjoxLCJpYXQiOjE3MTA4MzA5NTcsImV4cCI6MTcxMTQzNTc1N30.I-3cv5fRrSwE3OBkNhqu8dsNDHO-hFt9O9djGSt6Npg
+ *         refresh_token:
+ *           type: string
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjVmNDVkN2NiNTc1NDc5YjVmZWRiN2FmIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE3MTA4MzA5NTcsImV4cCI6MTcxOTQ3MDk1N30.WiD1CqEnx66JYP3llGakUkqq3_b2lSwiCBnc0SMETE8
+ *     User:
+ *       type: "object"
+ *       properties:
+ *         _id:
+ *           type: string
+ *           format: MongoId
+ *           example: 65f45d7cb575479b5fedb7af
+ *         name:
+ *           type: string
+ *           example: "minh"
+ *         email:
+ *           type: string
+ *           example: "taminh596@gmail.com"
+ *         date_of_birth:
+ *           type: string
+ *           format: ISO8601
+ *           example: 2023-06-08T10:17:31.096Z
+ *         create_at:
+ *           type: string
+ *           format: ISO8601
+ *           example: 2024-03-15T14:38:52.654Z
+ *         updated_at:
+ *           type: string
+ *           format: ISO8601
+ *           example: 2024-03-15T15:12:39.805Z
+ *         verify:
+ *           $ref: "#/components/schemas/UserVerifyStatus"
+ *         twitter_circle:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: MongoId
+ *           example: ['65f45d7cb575479b5fedb7af']
+ *         bio:
+ *           type: string
+ *           example: "This is my bio."
+ *         location:
+ *           type: string
+ *           example: "San Francisco, CA"
+ *         website:
+ *           type: string
+ *           example: "www.example.com"
+ *         username:
+ *           type: string
+ *           example: "taminh596"
+ *         avatar:
+ *           type: string
+ *           example: "http:localhost:4000/avatar/test.jpg"
+ *         cover_photo:
+ *           type: string
+ *           example: "http:localhost:4000/cover_photo/test.jpg"
+ *     UserVerifyStatus:
+ *       type: number
+ *       enum: [Unverified, Verified, Banned]
+ *       example: 1
+ */
+
 export interface LoginReqBody {
   email: string;
   password: string;

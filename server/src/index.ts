@@ -16,7 +16,37 @@ import "~/utils/s3";
 import { createServer } from "http";
 import conversationsRouter from "./routes/conversations.routes";
 import initSocket from "./utils/socket";
+import YAML from "yaml";
+import fs from "fs";
+import path from "path";
+import swaggerUi from "swagger-ui-express";
+import swaggerJSDoc from "swagger-jsdoc";
 
+const file = fs.readFileSync(path.resolve("twitter-swagger.yaml"), "utf-8");
+
+// const options = {
+//   definition: {
+//     openapi: "3.0.0",
+//     info: {
+//       title: "Twitter API",
+//       version: "1.0.0",
+//       description: "A simple Express Library API",
+//     },
+//     components: {
+//       securitySchemes: {
+//         BearerAuth: {
+//           type: "http",
+//           scheme: "bearer",
+//           bearerFormat: "JWT",
+//         }
+//       }
+//     }
+//   },
+//   apis: ['./src/routes/*.routes.ts', './src/models/requests/*.requests.ts'],
+// };
+// const openapiSpecification = swaggerJSDoc(options);
+
+const swaggerDocument = YAML.parse(file);
 // import '~/utils/fake'
 config();
 const app = express();
@@ -29,6 +59,7 @@ app.use(cors());
 initFolder();
 
 app.use(express.json());
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/users", userRouter);
 app.use("/medias", mediasRouter);
 app.use("/static", staticRouter);
