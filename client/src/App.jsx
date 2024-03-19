@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import axios from "axios";
 
 function App() {
-  // const controller = new AbortController();
+  const controller = new AbortController();
   useEffect(() => {
     axios
       .get("users/me", {
@@ -13,14 +13,14 @@ function App() {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         baseURL: import.meta.env.VITE_API_URL,
-        // signal: controller.signal,
+        signal: controller.signal,
       })
       .then((res) => {
         localStorage.setItem('profile', JSON.stringify(res.data.result))
       });
-    // return () => {
-    //   controller.abort();
-    // };
+    return () => {
+      controller.abort();
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <RouterProvider router={router} />;

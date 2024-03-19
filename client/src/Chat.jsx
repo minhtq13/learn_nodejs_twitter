@@ -36,23 +36,25 @@ export default function Chat() {
       });
   };
   useEffect(() => {
+    socket.auth = {
+      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+    };
+    socket.connect();
     socket.on("receive_message", (data) => {
       const { payload } = data;
-      console.log(payload)
-      setConversations((conversations) => [...conversations, payload]);
+      setConversations((conversations) => [payload, ...conversations]);
     });
     socket.on("connect_error", (err) => {
       console.log(err.data);
-    })
+    });
     socket.on("disconnect", (reason) => {
-      console.log(reason)
-    })
+      console.log(reason);
+    });
     return () => {
       socket.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
- 
+
   useEffect(() => {
     if (receiver) {
       axios
@@ -92,7 +94,9 @@ export default function Chat() {
         })
         .then((res) => {
           const { conversations, page, total_page } = res.data.result;
-          setConversations((prev) => [...prev, ...conversations]);
+          setConversations((prev) => {
+            return [...prev, ...conversations];
+          });
           setPagination({
             page,
             total_page,
@@ -115,11 +119,10 @@ export default function Chat() {
       {
         ...conversation,
         _id: new Date().getTime(),
-      }, 
+      },
       ...conversations,
     ]);
   };
-
   return (
     <div>
       <h1>Chat</h1>
@@ -151,15 +154,21 @@ export default function Chat() {
           loader={<h4>Loading...</h4>}
           scrollableTarget="scrollableDiv"
         >
-            {conversations.map((conversation, index) => {
-              return (
-                <div key={index}>
-                  <div className="message-container">
-                    <div className={conversation.sender_id === profile._id ? "message-right message" : "message"}>{conversation.content}</div>
+          {conversations.map((conversation, index) => {
+            return (
+              <div key={index}>
+                <div className="message-container">
+                  <div
+                    className={
+                      conversation.sender_id === profile._id ? "message-right message" : "message"
+                    }
+                  >
+                    {conversation.content}
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
         </InfiniteScroll>
       </div>
       <form onSubmit={send}>
