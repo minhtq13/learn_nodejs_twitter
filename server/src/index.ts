@@ -11,7 +11,7 @@ import tweetsRouter from "./routes/tweets.routes";
 import bookmarksRouter from "./routes/bookmarks.routes";
 import liklesRouter from "./routes/likes.routes";
 import searchRouter from "./routes/search.routes";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import "~/utils/s3";
 import { createServer } from "http";
 import conversationsRouter from "./routes/conversations.routes";
@@ -21,6 +21,10 @@ import fs from "fs";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
+import "~/constants/config";
+import helmet from "helmet";
+import { isProduction } from "~/constants/config";
+import rateLimit from "express-rate-limit";
 
 const file = fs.readFileSync(path.resolve("twitter-swagger.yaml"), "utf-8");
 
@@ -50,10 +54,23 @@ const swaggerDocument = YAML.parse(file);
 // import '~/utils/fake'
 config();
 const app = express();
+
 const httpServer = createServer(app);
 const port = process.env.PORT || 4000;
 
-app.use(cors());
+app.use(helmet());
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false
+});
+const corsOptions: CorsOptions = {
+  origin: isProduction ? process.env.CLIENT_URL : "*",
+};
+// Giới hạn số lượng request
+app.use(limiter);
+app.use(cors(corsOptions));
 
 // Tạo folder upload
 initFolder();
